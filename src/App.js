@@ -1,4 +1,5 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
+import axios from "axios"
 import { usePosts } from "./hooks/usePosts"
 import PostList from "./components/PostList"
 import PostForm from "./components/PostForm"
@@ -8,14 +9,21 @@ import MyButton from "./components/UI/button/MyButton"
 import "./styles/App.css"
 
 function App() {
-  const [posts, setPosts] = useState([
-    { id: 1, title: "bb", body: "zz" },
-    { id: 2, title: "aa", body: "ff" },
-    { id: 3, title: "cc", body: "dd" }
-  ])
+  const [posts, setPosts] = useState([])
   const [filter, setFilter] = useState({ sort: "", query: "" })
   const [modal, setModal] = useState(false)
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
+
+  useEffect(() => {
+    fetchPosts()
+  }, [])
+
+  const fetchPosts = async () => {
+    const response = await axios.get(
+      "https://jsonplaceholder.typicode.com/posts"
+    )
+    setPosts(response.data)
+  }
 
   const createPost = newPost => {
     setPosts([...posts, newPost])
