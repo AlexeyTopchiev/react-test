@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from "react"
-import "./styles/App.css"
+import React, { useState } from "react"
+import { usePosts } from "./hooks/usePosts"
 import PostList from "./components/PostList"
 import PostForm from "./components/PostForm"
 import PostFilter from "./components/PostFilter"
 import MyModal from "./components/UI/modal/MyModal"
 import MyButton from "./components/UI/button/MyButton"
+import "./styles/App.css"
 
 function App() {
   const [posts, setPosts] = useState([
@@ -12,26 +13,9 @@ function App() {
     { id: 2, title: "aa", body: "ff" },
     { id: 3, title: "cc", body: "dd" }
   ])
-
   const [filter, setFilter] = useState({ sort: "", query: "" })
-
   const [modal, setModal] = useState(false)
-
-  const sortedPosts = useMemo(() => {
-    if (filter.sort) {
-      return [...posts].sort((a, b) =>
-        a[filter.sort].localeCompare(b[filter.sort])
-      )
-    } else {
-      return posts
-    }
-  }, [posts, filter.sort])
-
-  const sortedAndSearchedPosts = useMemo(() => {
-    return sortedPosts.filter(post =>
-      post.title.toLowerCase().includes(filter.query.toLowerCase())
-    )
-  }, [filter.query, sortedPosts])
+  const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
 
   const createPost = newPost => {
     setPosts([...posts, newPost])
@@ -41,10 +25,6 @@ function App() {
   const removePost = post => {
     setPosts(posts.filter(p => p.id !== post.id))
   }
-
-  // const handleModalVisible = () => {
-  //   setModal(!modal)
-  // }
 
   return (
     <div className="App">
