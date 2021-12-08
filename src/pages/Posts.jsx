@@ -20,7 +20,7 @@ function Posts() {
   const [page, setPage] = useState(1)
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
 
-  const [fetchPosts, isPostsLoading, postError] = useFetching(
+  const [fetchPosts, isPostsLoading, postsError] = useFetching(
     async (limit, page) => {
       const response = await PostService.getAll(limit, page)
       setPosts(response.data)
@@ -57,7 +57,7 @@ function Posts() {
       </MyModal>
       <hr style={{ margin: "15px 0" }} />
       <PostFilter filter={filter} setFilter={setFilter} />
-      {postError && <h1>Произошла ошибка: {postError}</h1>}
+      {postsError && <h1>Произошла ошибка: {postsError}</h1>}
       {isPostsLoading ? (
         <div
           style={{
