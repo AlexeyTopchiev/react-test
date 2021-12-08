@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { usePosts } from "./hooks/usePosts"
+import { useFetching } from "./hooks/useFetching"
 import PostService from "./API/PostService"
 import PostList from "./components/PostList"
 import PostForm from "./components/PostForm"
@@ -13,21 +14,15 @@ function App() {
   const [posts, setPosts] = useState([])
   const [filter, setFilter] = useState({ sort: "", query: "" })
   const [modal, setModal] = useState(false)
-  const [isPostsLoading, setIsPostsLoading] = useState(false)
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
+  const [fetchPosts, isPostsLoading, postError] = useFetching(async () => {
+    const posts = await PostService.getAll()
+    setPosts(posts)
+  })
 
   useEffect(() => {
     fetchPosts()
   }, [])
-
-  const fetchPosts = async () => {
-    setIsPostsLoading(true)
-    setTimeout(async () => {
-      const posts = await PostService.getAll()
-      setPosts(posts)
-      setIsPostsLoading(false)
-    }, 1000)
-  }
 
   const createPost = newPost => {
     setPosts([...posts, newPost])
@@ -48,6 +43,7 @@ function App() {
       </MyModal>
       <hr style={{ margin: "15px 0" }} />
       <PostFilter filter={filter} setFilter={setFilter} />
+      {postError && <h1>Произошла ошибка: {postError}</h1>}
       {isPostsLoading ? (
         <div
           style={{
